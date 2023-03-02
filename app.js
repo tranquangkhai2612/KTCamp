@@ -10,11 +10,13 @@ const Campground = require("./models/campground");
 const Review = require("./models/review");
 
 const campgrounds = require("./routes/campgrounds");
+const reviews = require("./routes/review");
 
 mongoose.connect("mongodb://localhost:27017/kt-camp", {
   useNewUrlParser: true,
-  //   useCreateIndex: true,
+  // useCreateIndex: true,
   useUnifiedTopology: true,
+  // useFindAndModify: false,
 });
 
 const db = mongoose.connection;
@@ -31,6 +33,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "public")));
 
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body);
@@ -53,23 +56,11 @@ const validateReview = (req, res, next) => {
 };
 
 app.use("/campgrounds", campgrounds);
+app.use("/campgrounds/:id/reviews", reviews);
 
 app.get("/", (req, res) => {
   res.render("home");
 });
-
-app.post(
-  "/campgrounds/:id/reviews",
-  validateReview,
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    const review = new Review(req.body.review);
-    campground.reviews.push(review);
-    await review.save();
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-  })
-);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
