@@ -21,8 +21,10 @@
   </head>
   <body class="d-flex flex-column vh-100">
     <%- include('../partials/navbar') %>
-    <main class="container mt-5"><%- body %></main>
-    <%- include('../partials/footer.ejs') %>
+    <main class="container mt-5">
+      <%- include('../partials/flash') %> <%- body %>
+    </main>
+    <%- include('../partials/footer') %>
     <script
       src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
       integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
