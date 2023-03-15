@@ -26,6 +26,7 @@ mongoose.connect("mongodb://localhost:27017/kt-camp", {
 });
 
 const db = mongoose.connection;
+
 db.on("error", console.error.bind(console, "connection error: "));
 db.once("open", () => {
   console.log("Database connected");
@@ -60,19 +61,18 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// app.get("/fakeUser", async (req, res) => {
+//   const user = new User({ email: "khai@gmail.com", username: "khai" });
+//   const newUser = await User.register(user, "myPassword");
+//   res.send(newUser);
+// });
+
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 });
-
-app.get("/fakeUser", async (req, res) => {
-  const user = new User({ email: "khai@gmail.com", username: "khai" });
-  const newUser = await User.register(user, "myPassword");
-  res.send(newUser);
-});
-
 /*
   GET /register -> Form
   POST /register -> create a new user
