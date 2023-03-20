@@ -1,15 +1,17 @@
+const { func } = require("joi");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Review = require("../models/review");
+//https://res.cloudinary.com/dbzhlwgdm/image/upload/v1679282188/KTCamp/smpwl55yp8l0bzjv3oj7.jpg
+
+const ImageSchema = new Schema({
+  url: String,
+  filename: String,
+});
 
 const CampgroundSchema = new Schema({
   title: String,
-  images: [
-    {
-      url: String,
-      filename: String,
-    },
-  ],
+  images: [ImageSchema],
   price: Number,
   description: String,
   location: String,
