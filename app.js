@@ -25,8 +25,7 @@ const reviewRoutes = require("./routes/review");
 const userRoutes = require("./routes/user");
 const { func } = require("joi");
 
-// const dbUrl = process.env.DB_URL;
-const dbUrl = "mongodb://localhost:27017/kt-camp";
+const dbUrl = process.env.DB_URL || "mongodb://localhost:27017/kt-camp";
 mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   //useCreateIndex: true,
