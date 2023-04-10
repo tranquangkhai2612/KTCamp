@@ -9,28 +9,41 @@ const ImageSchema = new Schema({
   filename: String,
 });
 
-const CampgroundSchema = new Schema({
-  title: String,
-  images: [ImageSchema],
-  geometry: {
-    type: {
-      type: String,
-      enum: ["Point"],
-      required: true,
+const CampgroundSchema = new Schema(
+  {
+    title: String,
+    images: [ImageSchema],
+    geometry: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
     },
-    coordinates: {
-      type: [Number],
-      required: true,
+    price: Number,
+    description: String,
+    location: String,
+    reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
   },
-  price: Number,
-  description: String,
-  location: String,
-  reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
-  author: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+
+CampgroundSchema.virtual("properties.id").get(function () {
+  return this._id;
+});
+CampgroundSchema.virtual("properties.title").get(function () {
+  return this.title;
 });
 
 CampgroundSchema.post("findOneAndDelete", async function (doc) {

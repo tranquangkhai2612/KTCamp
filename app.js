@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -16,16 +17,21 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
+const mongoSanitize = require("express-mongo-sanitize");
+const MongoDBStore = require("connect-mongo");
 
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/review");
 const userRoutes = require("./routes/user");
+const { func } = require("joi");
 
-mongoose.connect("mongodb://localhost:27017/kt-camp", {
+// const dbUrl = process.env.DB_URL;
+const dbUrl = "mongodb://localhost:27017/kt-camp";
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
-  // useCreateIndex: true,
+  //useCreateIndex: true,
   useUnifiedTopology: true,
-  // useFindAndModify: false,
+  //useFindAndModify: false,
 });
 
 const db = mongoose.connection;
@@ -44,13 +50,27 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(mongoSanitize());
+
+const store = new MongoDBStore({
+  mongoUrl: dbUrl,
+  secret: "Thisismysecret",
+  touchAfter: 24 * 60 * 60,
+});
+
+store.on("error", function (e) {
+  console.log("Session Store Error", e);
+});
 
 const sessionConfig = {
+  store,
+  name: "session",
   secret: "Thisismysecret",
   resave: false,
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
+    // secure: true,
     expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
